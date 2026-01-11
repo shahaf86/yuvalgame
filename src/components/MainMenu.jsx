@@ -17,25 +17,28 @@ const MainMenu = ({ onSelectMode, score, userName, onLogout, onOpenSettings }) =
                 <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
             </div>
 
-            {/* Settings Button */}
-            <button
-                onClick={onOpenSettings}
-                className="absolute top-6 left-36 text-gray-400 hover:text-gray-600 transition-colors"
-                title="הגדרות"
-            >
-                <div className="bg-white/50 p-2 rounded-full border border-white hover:bg-white shadow-sm">
-                    <Settings className="w-5 h-5" />
-                </div>
-            </button>
+            {/* Top Bar Actions */}
+            <div className="absolute top-6 right-6 flex items-center gap-3">
+                {/* Settings Button */}
+                <button
+                    onClick={onOpenSettings}
+                    className="bg-white/80 hover:bg-white text-gray-500 hover:text-primary p-2 rounded-full shadow-md transition-all border border-purple-200"
+                    title="הגדרות"
+                >
+                    <Settings className="w-6 h-6" />
+                </button>
 
-            {/* Logout Button */}
-            <button
-                onClick={onLogout}
-                className="absolute top-6 right-6 flex items-center gap-2 bg-red-100 hover:bg-red-200 text-red-600 px-4 py-2 rounded-full shadow transition-colors font-bold"
-            >
-                <LogOut className="w-5 h-5" />
-                <span>יציאה</span>
-            </button>
+                {/* Logout Button */}
+                <button
+                    onClick={onLogout}
+                    className="flex items-center gap-2 bg-red-100 hover:bg-red-200 text-red-600 px-4 py-2 rounded-full shadow transition-colors font-bold"
+                >
+                    <LogOut className="w-5 h-5" />
+                    <span>יציאה</span>
+                </button>
+            </div>
+
+
 
             <div className="text-center mb-12 animate-bounce-in">
                 <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary mb-4 drop-shadow-sm">

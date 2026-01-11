@@ -11,6 +11,7 @@ const HebrewGame = ({ score, updateScore, onBack }) => {
     const [feedback, setFeedback] = useState(null);
     const [selectedOption, setSelectedOption] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [isAiContent, setIsAiContent] = useState(false);
     const [error, setError] = useState(null);
 
     // Initial Load
@@ -26,11 +27,13 @@ const HebrewGame = ({ score, updateScore, onBack }) => {
                 const generated = await generateHebrewStory();
                 setCurrentStory(generated);
                 setCurrentQuestionIndex(0);
+                setIsAiContent(true);
             } else {
                 // Fallback to static
                 const random = stories[Math.floor(Math.random() * stories.length)];
                 setCurrentStory(random);
                 setCurrentQuestionIndex(0);
+                setIsAiContent(false);
             }
         } catch (err) {
             console.error("Failed to load story", err);
@@ -38,6 +41,7 @@ const HebrewGame = ({ score, updateScore, onBack }) => {
             const random = stories[Math.floor(Math.random() * stories.length)];
             setCurrentStory(random);
             setCurrentQuestionIndex(0);
+            setIsAiContent(false);
         } finally {
             setLoading(false);
         }
@@ -98,7 +102,14 @@ const HebrewGame = ({ score, updateScore, onBack }) => {
 
                 {/* Story Card */}
                 <div className="bg-white rounded-3xl shadow-lg p-6 lg:p-8 border-r-8 border-secondary overflow-y-auto max-h-[80vh]">
-                    <h2 className="text-3xl font-bold text-secondary mb-4">{currentStory.title}</h2>
+                    <div className="flex justify-between items-start mb-4">
+                        <h2 className="text-3xl font-bold text-secondary">{currentStory.title}</h2>
+                        {isAiContent && (
+                            <span className="bg-purple-100 text-purple-600 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 border border-purple-200">
+                                ✨ AI
+                            </span>
+                        )}
+                    </div>
                     <p className="text-xl sm:text-2xl leading-relaxed text-gray-700 font-medium whitespace-pre-line">
                         {currentStory.text}
                     </p>

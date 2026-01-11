@@ -10,6 +10,7 @@ const FirstLetterGame = ({ score, updateScore, onBack }) => {
     const [feedback, setFeedback] = useState(null);
 
     const [loading, setLoading] = useState(false);
+    const [isAiContent, setIsAiContent] = useState(false);
 
     useEffect(() => {
         nextLevel();
@@ -24,15 +25,18 @@ const FirstLetterGame = ({ score, updateScore, onBack }) => {
             if (checkApiKey()) {
                 const generated = await generateFirstLetterItem();
                 setCurrentItem(generated);
+                setIsAiContent(true);
             } else {
                 // Fallback
                 const random = preschoolData[Math.floor(Math.random() * preschoolData.length)];
                 setCurrentItem(random);
+                setIsAiContent(false);
             }
         } catch (err) {
             console.error(err);
             const random = preschoolData[Math.floor(Math.random() * preschoolData.length)];
             setCurrentItem(random);
+            setIsAiContent(false);
         } finally {
             setLoading(false);
         }
@@ -40,11 +44,49 @@ const FirstLetterGame = ({ score, updateScore, onBack }) => {
 
     const speakWord = () => {
         if (!currentItem) return;
+
+        // Cancel previous speech
+        window.speechSynthesis.cancel();
+
         const utterance = new SpeechSynthesisUtterance(currentItem.word);
         utterance.lang = 'he-IL';
-        utterance.rate = 0.8;
+        utterance.rate = 0.9; // Slightly slower for kids
+
+        // Voice Selection Logic
+        const voices = window.speechSynthesis.getVoices();
+
+        // 1. Try to find a specific Google Hebrew voice (often best quality)
+        let bestVoice = voices.find(v => v.name.includes("Google") && v.lang.includes("he"));
+
+        // 2. Fallback to any Hebrew voice
+        if (!bestVoice) {
+            bestVoice = voices.find(v => v.lang.includes("he"));
+        }
+
+        if (bestVoice) {
+            utterance.voice = bestVoice;
+        }
+
         window.speechSynthesis.speak(utterance);
     };
+
+    // Ensure voices are loaded (Chrome quirk)
+    useEffect(() => {
+        const handleVoicesChanged = () => {
+            // Just trigger a re-render or ensure voices are available
+            window.speechSynthesis.getVoices();
+            // We don't really need to store them in state unless we list them, 
+            // but reading them ensures the browser loads them.
+        };
+
+        window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
+        handleVoicesChanged(); // Call immediately in case they are already loaded
+
+        return () => {
+            window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
+            window.speechSynthesis.cancel(); // Cleanup speech on unmount
+        };
+    }, []);
 
     const handleOptionClick = (letter) => {
         if (feedback) return;
@@ -104,6 +146,11 @@ const FirstLetterGame = ({ score, updateScore, onBack }) => {
                     <h2 className="text-6xl font-bold text-gray-800 tracking-wide mb-2">
                         {currentItem.word}
                     </h2>
+                    {isAiContent && (
+                        <div className="absolute bottom-4 left-4 bg-purple-100 text-purple-600 text-xs font-bold px-3 py-1 rounded-full border border-purple-200">
+                            ✨ AI
+                        </div>
+                    )}
                     <p className="text-xl text-gray-500 font-medium">בְּאֵיזוֹ אוֹת זֶה מַתְחִיל?</p>
                 </div>
 

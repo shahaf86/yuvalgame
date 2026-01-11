@@ -11,6 +11,7 @@ const FINAL_LETTERS = { 'ך': 'כ', 'ם': 'מ', 'ן': 'נ', 'ף': 'פ', 'ץ': '�
 const HangmanGame = ({ score, updateScore, onBack }) => {
     const [wordData, setWordData] = useState(null);
     const [guessedLetters, setGuessedLetters] = useState(new Set());
+    const [guessedLetters, setGuessedLetters] = new Set());
     const [mistakes, setMistakes] = useState(0);
     const [gameState, setGameState] = useState('playing'); // playing, won, lost
     const [showHint, setShowHint] = useState(false);
@@ -18,6 +19,7 @@ const HangmanGame = ({ score, updateScore, onBack }) => {
     const MAX_MISTAKES = 6;
 
     const [loading, setLoading] = useState(false);
+    const [isAiContent, setIsAiContent] = useState(false);
 
     useEffect(() => {
         initGame();
@@ -35,15 +37,18 @@ const HangmanGame = ({ score, updateScore, onBack }) => {
             if (checkApiKey()) {
                 const generated = await generateHangmanWord();
                 setWordData(generated);
+                setIsAiContent(true);
             } else {
                 // Fallback
                 const random = hangmanWords[Math.floor(Math.random() * hangmanWords.length)];
                 setWordData(random);
+                setIsAiContent(false);
             }
         } catch (err) {
             console.error(err);
             const random = hangmanWords[Math.floor(Math.random() * hangmanWords.length)];
             setWordData(random);
+            setIsAiContent(false);
         } finally {
             setLoading(false);
         }
@@ -161,6 +166,11 @@ const HangmanGame = ({ score, updateScore, onBack }) => {
 
                 {!loading && wordData && (
                     <>
+                        {isAiContent && (
+                            <div className="bg-purple-100 text-purple-600 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 border border-purple-200 mb-2 animate-fade-in">
+                                ✨ נוצר על ידי AI
+                            </div>
+                        )}
                         <div className="flex flex-col items-center gap-2 relative">
                             <div className="bg-yellow-100 px-6 py-2 rounded-full font-bold text-yellow-700 shadow-inner flex items-center gap-3">
                                 <span>קָטֵגוֹרְיָה: {wordData.category}</span>

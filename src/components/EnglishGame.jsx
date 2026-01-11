@@ -12,6 +12,7 @@ const EnglishGame = ({ score, updateScore, onBack }) => {
     const [isProcessing, setIsProcessing] = useState(false);
 
     const [loading, setLoading] = useState(false);
+    const [isAiContent, setIsAiContent] = useState(false);
 
     useEffect(() => {
         initializeGame();
@@ -28,12 +29,14 @@ const EnglishGame = ({ score, updateScore, onBack }) => {
             // 1. Try to fetch from AI
             if (checkApiKey()) {
                 selectedVocab = await generateEnglishDeck();
+                setIsAiContent(true);
             } else {
                 // Fallback: Random shuffle from static
                 // Deep copy to avoid mutating original
                 const pool = [...vocab];
                 pool.sort(() => Math.random() - 0.5);
                 selectedVocab = pool.slice(0, 8);
+                setIsAiContent(false);
             }
 
             // 2. Create deck
@@ -53,6 +56,7 @@ const EnglishGame = ({ score, updateScore, onBack }) => {
             const pool = [...vocab];
             pool.sort(() => Math.random() - 0.5);
             const selectedVocab = pool.slice(0, 8);
+            setIsAiContent(false);
 
             let deck = [];
             selectedVocab.forEach(item => {
@@ -123,6 +127,11 @@ const EnglishGame = ({ score, updateScore, onBack }) => {
                     </div>
                 ) : (
                     <>
+                        {isAiContent && (
+                            <div className="bg-purple-100 text-purple-600 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 border border-purple-200 animate-fade-in self-end">
+                                ✨ נוצר על ידי AI
+                            </div>
+                        )}
                         <div className="grid grid-cols-4 gap-3 sm:gap-4 w-full">
                             {cards.map((card, index) => {
                                 const isFlipped = flippedCards.includes(index) || matchedPairs.includes(card.pairId);
