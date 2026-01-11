@@ -131,8 +131,13 @@ const HangmanGame = ({ score, updateScore, onBack }) => {
             <div className="flex flex-col items-center gap-6 w-full max-w-2xl">
 
                 {wordData && (
-                    <div className="bg-yellow-100 px-6 py-2 rounded-full font-bold text-yellow-700 shadow-inner">
-                        קָטֵגוֹרְיָה: {wordData.category}
+                    <div className="flex flex-col items-center gap-2">
+                        <div className="text-9xl mb-4 filter drop-shadow-xl animate-bounce-in">
+                            {wordData.image}
+                        </div>
+                        <div className="bg-yellow-100 px-6 py-2 rounded-full font-bold text-yellow-700 shadow-inner">
+                            קָטֵגוֹרְיָה: {wordData.category}
+                        </div>
                     </div>
                 )}
 
