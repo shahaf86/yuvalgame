@@ -15,6 +15,15 @@
   body {
     font-family: var(--font-sans);
     @apply antialiased text-gray-900 bg-blue-50;
+    touch-action: manipulation;
+    /* Disables double-tap zoom delay */
+    -webkit-tap-highlight-color: transparent;
+    /* Removes gray tap box */
+  }
+
+  button {
+    cursor: pointer;
+    touch-action: manipulation;
   }
 }
 
