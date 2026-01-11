@@ -6,11 +6,14 @@ import EnglishGame from './components/EnglishGame';
 import HangmanGame from './components/HangmanGame';
 import WelcomeScreen from './components/WelcomeScreen';
 
+import CountingGame from './components/CountingGame';
+import FirstLetterGame from './components/FirstLetterGame';
+
 function App() {
   const [userName, setUserName] = useState(() => {
     return localStorage.getItem('kidAppName') || null;
   });
-  const [currentMode, setCurrentMode] = useState(null); // 'math', 'hebrew', 'english', 'hangman', null
+  const [currentMode, setCurrentMode] = useState(null); // 'math', 'hebrew', 'english', 'hangman', 'counting', 'firstLetter', null
   const [score, setScore] = useState(() => {
     const saved = localStorage.getItem('kidAppScore');
     return saved ? parseInt(saved, 10) : 0;
@@ -27,6 +30,12 @@ function App() {
   const handleSetUser = (name) => {
     setUserName(name);
     localStorage.setItem('kidAppName', name);
+  };
+
+  const handleLogout = () => {
+    setUserName(null);
+    localStorage.removeItem('kidAppName');
+    setCurrentMode(null);
   };
 
   const renderScreen = () => {
@@ -59,11 +68,25 @@ function App() {
           updateScore={handleUpdateScore}
           onBack={() => setCurrentMode(null)}
         />;
+      // Future preschool games
+      case 'counting':
+        return <CountingGame
+          score={score}
+          updateScore={handleUpdateScore}
+          onBack={() => setCurrentMode(null)}
+        />;
+      case 'firstLetter':
+        return <FirstLetterGame
+          score={score}
+          updateScore={handleUpdateScore}
+          onBack={() => setCurrentMode(null)}
+        />;
       default:
         return <MainMenu
           userName={userName}
           score={score}
           onSelectMode={setCurrentMode}
+          onLogout={handleLogout}
         />;
     }
   };
