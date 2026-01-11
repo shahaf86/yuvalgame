@@ -17,28 +17,40 @@ function App() {
   });
   const [currentMode, setCurrentMode] = useState(null); // 'math', 'hebrew', 'english', 'hangman', 'counting', 'firstLetter', null
   const [showSettings, setShowSettings] = useState(false);
-  const [score, setScore] = useState(() => {
-    const saved = localStorage.getItem('kidAppScore');
-    return saved ? parseInt(saved, 10) : 0;
-  });
+  const [score, setScore] = useState(0);
 
+  // Effect to load score when user changes
   useEffect(() => {
-    localStorage.setItem('kidAppScore', score.toString());
-  }, [score]);
+    if (userName) {
+      const savedScore = localStorage.getItem(`score_${userName}`);
+      setScore(savedScore ? parseInt(savedScore, 10) : 0);
+    } else {
+      setScore(0);
+    }
+  }, [userName]);
+
+  // Effect to save score when it changes (only if user logged in)
+  useEffect(() => {
+    if (userName) {
+      localStorage.setItem(`score_${userName}`, score.toString());
+    }
+  }, [score, userName]);
 
   const handleUpdateScore = (points) => {
     setScore(prev => prev + points);
   };
 
   const handleSetUser = (name) => {
-    setUserName(name);
-    localStorage.setItem('kidAppName', name);
+    const normalizeName = name.trim().toLowerCase();
+    setUserName(normalizeName); // Store normalized for consistency
+    localStorage.setItem('kidAppName', normalizeName);
   };
 
   const handleLogout = () => {
     setUserName(null);
     localStorage.removeItem('kidAppName');
     setCurrentMode(null);
+    setScore(0);
   };
 
   const renderScreen = () => {
