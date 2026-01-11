@@ -100,7 +100,7 @@ const EnglishGame = ({ score, updateScore, onBack }) => {
                 `}
                                 disabled={isMatched}
                             >
-                                <div className={isFlipped ? "block" : "hidden"}>
+                                <div className={isFlipped ? "block rotate-y-180" : "hidden"}>
                                     {card.content}
                                 </div>
                                 <div className={!isFlipped ? "block" : "hidden"}>
