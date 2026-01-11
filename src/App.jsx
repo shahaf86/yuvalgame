@@ -9,11 +9,14 @@ import WelcomeScreen from './components/WelcomeScreen';
 import CountingGame from './components/CountingGame';
 import FirstLetterGame from './components/FirstLetterGame';
 
+import SettingsModal from './components/SettingsModal';
+
 function App() {
   const [userName, setUserName] = useState(() => {
     return localStorage.getItem('kidAppName') || null;
   });
   const [currentMode, setCurrentMode] = useState(null); // 'math', 'hebrew', 'english', 'hangman', 'counting', 'firstLetter', null
+  const [showSettings, setShowSettings] = useState(false);
   const [score, setScore] = useState(() => {
     const saved = localStorage.getItem('kidAppScore');
     return saved ? parseInt(saved, 10) : 0;
@@ -82,12 +85,18 @@ function App() {
           onBack={() => setCurrentMode(null)}
         />;
       default:
-        return <MainMenu
-          userName={userName}
-          score={score}
-          onSelectMode={setCurrentMode}
-          onLogout={handleLogout}
-        />;
+        return (
+          <>
+            <MainMenu
+              userName={userName}
+              score={score}
+              onSelectMode={setCurrentMode}
+              onLogout={handleLogout}
+              onOpenSettings={() => setShowSettings(true)}
+            />
+            {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+          </>
+        );
     }
   };
 

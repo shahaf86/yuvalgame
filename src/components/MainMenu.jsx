@@ -1,7 +1,7 @@
 import React from 'react';
-import { Calculator, BookOpen, LogOut, Star } from 'lucide-react';
+import { Calculator, BookOpen, LogOut, Star, Settings } from 'lucide-react';
 
-const MainMenu = ({ onSelectMode, score, userName, onLogout }) => {
+const MainMenu = ({ onSelectMode, score, userName, onLogout, onOpenSettings }) => {
     // Normalization helper
     const isAviv = ['aviv', 'אביב'].includes(userName.toLowerCase().trim());
 
@@ -16,6 +16,17 @@ const MainMenu = ({ onSelectMode, score, userName, onLogout }) => {
                 <span className="text-xl font-bold text-yellow-600">{score}</span>
                 <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
             </div>
+
+            {/* Settings Button */}
+            <button
+                onClick={onOpenSettings}
+                className="absolute top-6 left-36 text-gray-400 hover:text-gray-600 transition-colors"
+                title="הגדרות"
+            >
+                <div className="bg-white/50 p-2 rounded-full border border-white hover:bg-white shadow-sm">
+                    <Settings className="w-5 h-5" />
+                </div>
+            </button>
 
             {/* Logout Button */}
             <button

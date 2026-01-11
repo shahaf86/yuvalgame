@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import GameLayout from './GameLayout';
 import { hangmanWords } from '../data/hangmanWords';
+import { checkApiKey, generateHangmanWord } from '../services/gemini';
 import confetti from 'canvas-confetti';
 import { RefreshCw, Heart } from 'lucide-react';
 
@@ -16,17 +17,36 @@ const HangmanGame = ({ score, updateScore, onBack }) => {
 
     const MAX_MISTAKES = 6;
 
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         initGame();
     }, []);
 
-    const initGame = () => {
-        const random = hangmanWords[Math.floor(Math.random() * hangmanWords.length)];
-        setWordData(random);
+    const initGame = async () => {
         setGuessedLetters(new Set());
         setMistakes(0);
         setGameState('playing');
         setShowHint(false);
+        setWordData(null); // Clear previous
+
+        setLoading(true);
+        try {
+            if (checkApiKey()) {
+                const generated = await generateHangmanWord();
+                setWordData(generated);
+            } else {
+                // Fallback
+                const random = hangmanWords[Math.floor(Math.random() * hangmanWords.length)];
+                setWordData(random);
+            }
+        } catch (err) {
+            console.error(err);
+            const random = hangmanWords[Math.floor(Math.random() * hangmanWords.length)];
+            setWordData(random);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const normalizeLetter = (char) => {
@@ -132,111 +152,122 @@ const HangmanGame = ({ score, updateScore, onBack }) => {
         <GameLayout title="נַחֵשׁ אֶת הַמִּלָּה" score={score} onBack={onBack}>
             <div className="flex flex-col items-center gap-6 w-full max-w-2xl">
 
-                {wordData && (
-                    <div className="flex flex-col items-center gap-2 relative">
-                        <div className="bg-yellow-100 px-6 py-2 rounded-full font-bold text-yellow-700 shadow-inner flex items-center gap-3">
-                            <span>קָטֵגוֹרְיָה: {wordData.category}</span>
-                            <button
-                                onClick={() => setShowHint(!showHint)}
-                                className="bg-white/50 hover:bg-white p-1 rounded-full px-3 text-xs border border-yellow-300 transition-all"
-                            >
-                                {showHint ? 'הסתר רמז' : 'רמז?'}
-                            </button>
-                        </div>
-
-                        {showHint && (
-                            <div className="absolute top-12 z-20 text-8xl filter drop-shadow-xl animate-bounce-in bg-white/80 p-4 rounded-3xl backdrop-blur-sm border-2 border-yellow-200">
-                                {wordData.image}
-                            </div>
-                        )}
+                {loading && (
+                    <div className="flex flex-col items-center justify-center h-64 animate-bounce">
+                        <div className="text-4xl">🤖</div>
+                        <p className="text-xl mt-4 font-bold text-gray-500">הרובוט מחפש מילה...</p>
                     </div>
                 )}
 
-                {/* Visual / Flower */}
-                <div className="relative w-48 h-48 flex justify-center items-center">
-                    {/* Simple visual representation of mistakes */}
-                    {/* Center (Smile) */}
-                    <div className={`w-16 h-16 rounded-full flex items-center justify-center text-4xl shadow-lg z-10 transition-all
+                {!loading && wordData && (
+                    <>
+                        <div className="flex flex-col items-center gap-2 relative">
+                            <div className="bg-yellow-100 px-6 py-2 rounded-full font-bold text-yellow-700 shadow-inner flex items-center gap-3">
+                                <span>קָטֵגוֹרְיָה: {wordData.category}</span>
+                                <button
+                                    onClick={() => setShowHint(!showHint)}
+                                    className="bg-white/50 hover:bg-white p-1 rounded-full px-3 text-xs border border-yellow-300 transition-all"
+                                >
+                                    {showHint ? 'הסתר רמז' : 'רמז?'}
+                                </button>
+                            </div>
+
+                            {showHint && (
+                                <div className="absolute top-12 z-20 text-8xl filter drop-shadow-xl animate-bounce-in bg-white/80 p-4 rounded-3xl backdrop-blur-sm border-2 border-yellow-200">
+                                    {wordData.image}
+                                </div>
+                            )}
+                        </div>
+                )}
+
+                        {/* Visual / Flower */}
+                        <div className="relative w-48 h-48 flex justify-center items-center">
+                            {/* Simple visual representation of mistakes */}
+                            {/* Center (Smile) */}
+                            <div className={`w-16 h-16 rounded-full flex items-center justify-center text-4xl shadow-lg z-10 transition-all
                  ${gameState === 'lost' ? 'bg-gray-300' : 'bg-yellow-300'}
              `}>
-                        {gameState === 'lost' ? '😢' : gameState === 'won' ? '😎' : '🙂'}
-                    </div>
+                                {gameState === 'lost' ? '😢' : gameState === 'won' ? '😎' : '🙂'}
+                            </div>
 
-                    {/* Petals - render based on Remaining lives (MAX - mistakes) */}
-                    {[...Array(MAX_MISTAKES)].map((_, i) => {
-                        const angle = (i * (360 / MAX_MISTAKES));
-                        const isLost = i < mistakes; // If i=0 (1st mistake), 1st petal is lost/grey
-                        // Actually standard hangman: Start with 0 parts, add parts on mistake.
-                        // "Flower losing petals": Start with ALL, remove one on mistake.
-                        const isRemaining = i >= mistakes; // i=0...5. If mistakes=1, i=0 is lost. i=1..5 remain.
+                            {/* Petals - render based on Remaining lives (MAX - mistakes) */}
+                            {[...Array(MAX_MISTAKES)].map((_, i) => {
+                                const angle = (i * (360 / MAX_MISTAKES));
+                                const isLost = i < mistakes; // If i=0 (1st mistake), 1st petal is lost/grey
+                                // Actually standard hangman: Start with 0 parts, add parts on mistake.
+                                // "Flower losing petals": Start with ALL, remove one on mistake.
+                                const isRemaining = i >= mistakes; // i=0...5. If mistakes=1, i=0 is lost. i=1..5 remain.
 
-                        return (
-                            <div
-                                key={i}
-                                className={`absolute w-12 h-12 rounded-full transform origin-center transition-all duration-500
+                                return (
+                                    <div
+                                        key={i}
+                                        className={`absolute w-12 h-12 rounded-full transform origin-center transition-all duration-500
                             ${isRemaining ? 'bg-pink-400 scale-100 shadow-md' : 'bg-transparent scale-0 opacity-0'}
                         `}
-                                style={{
-                                    transform: `rotate(${angle}deg) translate(3.5rem) rotate(-${angle}deg)`,
-                                    // simplified positioning around circle
-                                    top: '50%', left: '50%', marginTop: '-1.5rem', marginLeft: '-1.5rem',
-                                    transform: `rotate(${angle}deg) translateY(-3.5rem)`
-                                }}
-                            />
-                        );
-                    })}
-                </div>
-
-                <div className="text-gray-500 text-sm font-bold">
-                    {MAX_MISTAKES - mistakes} נִסְיוֹנוֹת נוֹתְרוּ
-                </div>
-
-                {/* Word Display */}
-                <div className="flex flex-wrap gap-2 justify-center my-4" dir="rtl">
-                    {getDisplayWord().map((char, idx) => (
-                        <div key={idx} className="w-12 h-16 border-b-4 border-gray-400 flex items-center justify-center text-4xl font-bold text-primary">
-                            {char}
+                                        style={{
+                                            transform: `rotate(${angle}deg) translate(3.5rem) rotate(-${angle}deg)`,
+                                            // simplified positioning around circle
+                                            top: '50%', left: '50%', marginTop: '-1.5rem', marginLeft: '-1.5rem',
+                                            transform: `rotate(${angle}deg) translateY(-3.5rem)`
+                                        }}
+                                    />
+                                );
+                            })}
                         </div>
-                    ))}
-                </div>
 
-                {/* Keyboard */}
-                <div className="flex flex-wrap gap-2 justify-center max-w-lg">
-                    {ALPHABET.map((letter) => {
-                        const isGuessed = guessedLetters.has(letter);
-                        return (
-                            <button
-                                key={letter}
-                                onClick={() => handleGuess(letter)}
-                                disabled={isGuessed || gameState !== 'playing'}
-                                className={`
+                        <div className="text-gray-500 text-sm font-bold">
+                            {MAX_MISTAKES - mistakes} נִסְיוֹנוֹת נוֹתְרוּ
+                        </div>
+
+                        {/* Word Display */}
+                        <div className="flex flex-wrap gap-2 justify-center my-4" dir="rtl">
+                            {getDisplayWord().map((char, idx) => (
+                                <div key={idx} className="w-12 h-16 border-b-4 border-gray-400 flex items-center justify-center text-4xl font-bold text-primary">
+                                    {char}
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Keyboard */}
+                        <div className="flex flex-wrap gap-2 justify-center max-w-lg">
+                            {ALPHABET.map((letter) => {
+                                const isGuessed = guessedLetters.has(letter);
+                                return (
+                                    <button
+                                        key={letter}
+                                        onClick={() => handleGuess(letter)}
+                                        disabled={isGuessed || gameState !== 'playing'}
+                                        className={`
                             w-10 h-12 rounded-lg font-bold text-xl shadow transition-all
                             ${isGuessed ? 'bg-gray-200 text-gray-400' : 'bg-white text-indigo-600 hover:bg-indigo-50 hover:-translate-y-1 hover:shadow-md'}
                         `}
-                            >
-                                {letter}
-                            </button>
-                        )
-                    })}
-                </div>
+                                    >
+                                        {letter}
+                                    </button>
+                                )
+                            })}
+                        </div>
 
-                {gameState !== 'playing' && (
-                    <div className="animate-bounce-in mt-4 flex flex-col items-center gap-4">
-                        <h2 className={`text-3xl font-bold ${gameState === 'won' ? 'text-green-500' : 'text-red-500'}`}>
-                            {gameState === 'won' ? 'כָּל הַכָּבוֹד!' : 'לֹא נוֹרָא, נַסֶּה שׁוּב!'}
-                        </h2>
-                        <button
-                            onClick={initGame}
-                            className="flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-orange-600"
-                        >
-                            <RefreshCw className="w-5 h-5" />
-                            משחק חדש
-                        </button>
-                    </div>
+                        {gameState !== 'playing' && (
+                            <div className="animate-bounce-in mt-4 flex flex-col items-center gap-4">
+                                <h2 className={`text-3xl font-bold ${gameState === 'won' ? 'text-green-500' : 'text-red-500'}`}>
+                                    {gameState === 'won' ? 'כָּל הַכָּבוֹד!' : 'לֹא נוֹרָא, נַסֶּה שׁוּב!'}
+                                </h2>
+                                <button
+                                    onClick={initGame}
+                                    className="flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-orange-600"
+                                >
+                                    <RefreshCw className="w-5 h-5" />
+                                    משחק חדש
+                                </button>
+                            </div>
+                        )}
+
+                    </>
                 )}
 
             </div>
-        </GameLayout>
+        </GameLayout >
     );
 };
 

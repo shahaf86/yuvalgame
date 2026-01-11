@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import GameLayout from './GameLayout';
 import { preschoolData } from '../data/preschoolData';
+import { checkApiKey, generateFirstLetterItem } from '../services/gemini';
 import confetti from 'canvas-confetti';
 import { Volume2 } from 'lucide-react';
 
@@ -8,14 +9,33 @@ const FirstLetterGame = ({ score, updateScore, onBack }) => {
     const [currentItem, setCurrentItem] = useState(null);
     const [feedback, setFeedback] = useState(null);
 
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         nextLevel();
     }, []);
 
-    const nextLevel = () => {
-        const random = preschoolData[Math.floor(Math.random() * preschoolData.length)];
-        setCurrentItem(random);
+    const nextLevel = async () => {
         setFeedback(null);
+        setCurrentItem(null);
+
+        setLoading(true);
+        try {
+            if (checkApiKey()) {
+                const generated = await generateFirstLetterItem();
+                setCurrentItem(generated);
+            } else {
+                // Fallback
+                const random = preschoolData[Math.floor(Math.random() * preschoolData.length)];
+                setCurrentItem(random);
+            }
+        } catch (err) {
+            console.error(err);
+            const random = preschoolData[Math.floor(Math.random() * preschoolData.length)];
+            setCurrentItem(random);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const speakWord = () => {
@@ -48,6 +68,17 @@ const FirstLetterGame = ({ score, updateScore, onBack }) => {
             setTimeout(() => setFeedback(null), 1000);
         }
     };
+
+    if (loading) {
+        return (
+            <GameLayout title="אוֹת פּוֹתַחַת" score={score} onBack={onBack}>
+                <div className="flex flex-col items-center justify-center h-64 animate-bounce">
+                    <div className="text-4xl">🤖</div>
+                    <p className="text-xl mt-4 font-bold text-gray-500">הרובוט בוחר מילה...</p>
+                </div>
+            </GameLayout>
+        );
+    }
 
     if (!currentItem) return null;
 

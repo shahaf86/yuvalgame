@@ -1,21 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import GameLayout from './GameLayout';
 import { stories } from '../data/stories';
+import { checkApiKey, generateHebrewStory } from '../services/gemini';
 import confetti from 'canvas-confetti';
 import { Check, X } from 'lucide-react';
 
 const HebrewGame = ({ score, updateScore, onBack }) => {
-    const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
+    const [currentStory, setCurrentStory] = useState(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [feedback, setFeedback] = useState(null); // 'correct', 'wrong', null
+    const [feedback, setFeedback] = useState(null);
     const [selectedOption, setSelectedOption] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    // Use modulo to loop infinitely roughly, or reshuffle. 
-    const story = stories[currentStoryIndex % stories.length];
-    const currentQuestion = story.questions[currentQuestionIndex];
+    // Initial Load
+    useEffect(() => {
+        loadStory();
+    }, []);
+
+    const loadStory = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            if (checkApiKey()) {
+                const generated = await generateHebrewStory();
+                setCurrentStory(generated);
+                setCurrentQuestionIndex(0);
+            } else {
+                // Fallback to static
+                const random = stories[Math.floor(Math.random() * stories.length)];
+                setCurrentStory(random);
+                setCurrentQuestionIndex(0);
+            }
+        } catch (err) {
+            console.error("Failed to load story", err);
+            // Fallback on error
+            const random = stories[Math.floor(Math.random() * stories.length)];
+            setCurrentStory(random);
+            setCurrentQuestionIndex(0);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <GameLayout title="משימת קריאה" score={score} onBack={onBack}>
+                <div className="flex flex-col items-center justify-center h-64 animate-bounce">
+                    <div className="text-4xl">🤖</div>
+                    <p className="text-xl mt-4 font-bold text-gray-500">הרובוט כותב סיפור חדש...</p>
+                </div>
+            </GameLayout>
+        );
+    }
+
+    if (!currentStory) return null;
+
+    const currentQuestion = currentStory.questions[currentQuestionIndex];
 
     const handleOptionClick = (index) => {
-        if (feedback === 'correct') return; // block if already success
+        if (feedback === 'correct') return;
 
         setSelectedOption(index);
         if (index === currentQuestion.correctAnswer) {
@@ -32,16 +76,15 @@ const HebrewGame = ({ score, updateScore, onBack }) => {
                 setFeedback(null);
                 setSelectedOption(null);
 
-                // Check if there are more questions in this story
-                if (currentQuestionIndex < story.questions.length - 1) {
+                if (currentQuestionIndex < currentStory.questions.length - 1) {
                     setCurrentQuestionIndex(prev => prev + 1);
                 } else {
-                    // Move to next story and reset question index
-                    setCurrentQuestionIndex(0);
-                    setCurrentStoryIndex(prev => prev + 1);
+                    // Load NEW story instead of cycling static array
+                    loadStory();
                 }
             }, 2000);
         } else {
+            // ... (wrong handle logic same as before)
             setFeedback('wrong');
             setTimeout(() => {
                 setFeedback(null);
@@ -55,9 +98,9 @@ const HebrewGame = ({ score, updateScore, onBack }) => {
 
                 {/* Story Card */}
                 <div className="bg-white rounded-3xl shadow-lg p-6 lg:p-8 border-r-8 border-secondary overflow-y-auto max-h-[80vh]">
-                    <h2 className="text-3xl font-bold text-secondary mb-4">{story.title}</h2>
+                    <h2 className="text-3xl font-bold text-secondary mb-4">{currentStory.title}</h2>
                     <p className="text-xl sm:text-2xl leading-relaxed text-gray-700 font-medium whitespace-pre-line">
-                        {story.text}
+                        {currentStory.text}
                     </p>
                 </div>
 
@@ -65,7 +108,7 @@ const HebrewGame = ({ score, updateScore, onBack }) => {
                 <div className="flex flex-col gap-4 justify-center">
                     <div className="bg-white rounded-2xl shadow-md p-6 border-b-4 border-gray-200">
                         <div className="flex justify-between items-center mb-2">
-                            <h3 className="text-xl font-bold text-gray-800">שאלה {currentQuestionIndex + 1} מתוך {story.questions.length}</h3>
+                            <h3 className="text-xl font-bold text-gray-800">שאלה {currentQuestionIndex + 1} מתוך {currentStory.questions.length}</h3>
                         </div>
                         <p className="text-xl text-primary font-bold">{currentQuestion.question}</p>
                     </div>
