@@ -80,10 +80,10 @@ const CountingGame = ({ score, updateScore, onBack }) => {
                             key={idx}
                             onClick={() => handleOptionClick(opt)}
                             className={`
-                        w-24 h-24 sm:w-28 sm:h-28 rounded-full text-5xl font-bold shadow-lg transition-all transform hover:scale-110 active:scale-95 border-b-8
+                        w-24 h-24 sm:w-28 sm:h-28 rounded-full text-5xl font-bold shadow-lg transition-all border-b-8
                         ${feedback === 'correct' && opt === count ? 'bg-green-400 border-green-600 text-white' :
                                     feedback === 'wrong' && opt !== count ? 'bg-gray-200 border-gray-300 text-gray-400' :
-                                        'bg-yellow-300 border-yellow-500 text-yellow-800 hover:bg-yellow-200'}
+                                        'bg-yellow-300 border-yellow-500 text-yellow-800'}
                     `}
                         >
                             {opt}

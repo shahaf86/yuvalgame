@@ -19,11 +19,28 @@
     /* Disables double-tap zoom delay */
     -webkit-tap-highlight-color: transparent;
     /* Removes gray tap box */
+    -webkit-user-select: none;
+    /* Safari */
+    user-select: none;
+    /* Prevent text selection which feels "webby" */
   }
 
   button {
     cursor: pointer;
     touch-action: manipulation;
+  }
+
+  /* Only apply hover effects on devices that actually hover (mouse) */
+  @media (hover: hover) {
+    button:hover {
+      filter: brightness(0.95);
+    }
+  }
+
+  /* Make buttons feel "pressed" instantly on mobile */
+  button:active {
+    transform: scale(0.95) !important;
+    transition: transform 0.05s ease-out !important;
   }
 }
 

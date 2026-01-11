@@ -56,10 +56,10 @@ const MainMenu = ({ onSelectMode, score, userName, onLogout, onOpenSettings }) =
                     <>
                         <button
                             onClick={() => onSelectMode('math')}
-                            className="group relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-4 border-transparent hover:border-primary flex flex-col items-center gap-6 overflow-hidden"
+                            className="group relative bg-white rounded-3xl p-8 shadow-xl border-4 border-transparent flex flex-col items-center gap-6 overflow-hidden active:scale-95 transition-all"
                         >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-100 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
-                            <div className="bg-orange-100 p-6 rounded-full group-hover:bg-primary group-hover:text-white transition-colors duration-300 z-10">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-100 rounded-bl-full -mr-8 -mt-8"></div>
+                            <div className="bg-orange-100 p-6 rounded-full group-hover:bg-primary group-hover:text-white transition-colors duration-300 z-10 w-28 h-28 flex items-center justify-center">
                                 <Calculator className="w-16 h-16" />
                             </div>
                             <span className="text-3xl font-bold text-gray-800 z-10">חשבון</span>
@@ -68,10 +68,10 @@ const MainMenu = ({ onSelectMode, score, userName, onLogout, onOpenSettings }) =
 
                         <button
                             onClick={() => onSelectMode('hebrew')}
-                            className="group relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-4 border-transparent hover:border-secondary flex flex-col items-center gap-6 overflow-hidden"
+                            className="group relative bg-white rounded-3xl p-8 shadow-xl border-4 border-transparent flex flex-col items-center gap-6 overflow-hidden active:scale-95 transition-all"
                         >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-teal-100 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
-                            <div className="bg-teal-100 p-6 rounded-full group-hover:bg-secondary group-hover:text-white transition-colors duration-300 z-10">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-teal-100 rounded-bl-full -mr-8 -mt-8"></div>
+                            <div className="bg-teal-100 p-6 rounded-full group-hover:bg-secondary group-hover:text-white transition-colors duration-300 z-10 w-28 h-28 flex items-center justify-center">
                                 <BookOpen className="w-16 h-16" />
                             </div>
                             <span className="text-3xl font-bold text-gray-800 z-10">עברית</span>
@@ -80,10 +80,10 @@ const MainMenu = ({ onSelectMode, score, userName, onLogout, onOpenSettings }) =
 
                         <button
                             onClick={() => onSelectMode('english')}
-                            className="group relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-4 border-transparent hover:border-accent flex flex-col items-center gap-6 overflow-hidden"
+                            className="group relative bg-white rounded-3xl p-8 shadow-xl border-4 border-transparent flex flex-col items-center gap-6 overflow-hidden active:scale-95 transition-all"
                         >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-100 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
-                            <div className="bg-yellow-100 p-6 rounded-full group-hover:bg-accent group-hover:text-white transition-colors duration-300 z-10">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-100 rounded-bl-full -mr-8 -mt-8"></div>
+                            <div className="bg-yellow-100 p-6 rounded-full group-hover:bg-accent group-hover:text-white transition-colors duration-300 z-10 w-28 h-28 flex items-center justify-center">
                                 <span className="text-5xl font-bold">Aa</span>
                             </div>
                             <span className="text-3xl font-bold text-gray-800 z-10">אנגלית</span>
@@ -92,10 +92,10 @@ const MainMenu = ({ onSelectMode, score, userName, onLogout, onOpenSettings }) =
 
                         <button
                             onClick={() => onSelectMode('hangman')}
-                            className="group relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-4 border-transparent hover:border-red-400 flex flex-col items-center gap-6 overflow-hidden"
+                            className="group relative bg-white rounded-3xl p-8 shadow-xl border-4 border-transparent flex flex-col items-center gap-6 overflow-hidden active:scale-95 transition-all"
                         >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-red-100 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
-                            <div className="bg-red-100 p-6 rounded-full group-hover:bg-red-400 group-hover:text-white transition-colors duration-300 z-10">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-red-100 rounded-bl-full -mr-8 -mt-8"></div>
+                            <div className="bg-red-100 p-6 rounded-full group-hover:bg-red-400 group-hover:text-white transition-colors duration-300 z-10 w-28 h-28 flex items-center justify-center">
                                 <span className="text-5xl">🙂</span>
                             </div>
                             <span className="text-3xl font-bold text-gray-800 z-10">נחש את המילה</span>
