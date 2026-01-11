@@ -11,7 +11,7 @@ const FINAL_LETTERS = { 'ך': 'כ', 'ם': 'מ', 'ן': 'נ', 'ף': 'פ', 'ץ': '�
 const HangmanGame = ({ score, updateScore, onBack }) => {
     const [wordData, setWordData] = useState(null);
     const [guessedLetters, setGuessedLetters] = useState(new Set());
-    const [guessedLetters, setGuessedLetters] = new Set());
+
     const [mistakes, setMistakes] = useState(0);
     const [gameState, setGameState] = useState('playing'); // playing, won, lost
     const [showHint, setShowHint] = useState(false);
@@ -188,7 +188,7 @@ const HangmanGame = ({ score, updateScore, onBack }) => {
                                 </div>
                             )}
                         </div>
-                )}
+
 
                         {/* Visual / Flower */}
                         <div className="relative w-48 h-48 flex justify-center items-center">
