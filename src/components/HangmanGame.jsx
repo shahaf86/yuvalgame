@@ -12,6 +12,7 @@ const HangmanGame = ({ score, updateScore, onBack }) => {
     const [guessedLetters, setGuessedLetters] = useState(new Set());
     const [mistakes, setMistakes] = useState(0);
     const [gameState, setGameState] = useState('playing'); // playing, won, lost
+    const [showHint, setShowHint] = useState(false);
 
     const MAX_MISTAKES = 6;
 
@@ -25,6 +26,7 @@ const HangmanGame = ({ score, updateScore, onBack }) => {
         setGuessedLetters(new Set());
         setMistakes(0);
         setGameState('playing');
+        setShowHint(false);
     };
 
     const normalizeLetter = (char) => {
@@ -131,13 +133,22 @@ const HangmanGame = ({ score, updateScore, onBack }) => {
             <div className="flex flex-col items-center gap-6 w-full max-w-2xl">
 
                 {wordData && (
-                    <div className="flex flex-col items-center gap-2">
-                        <div className="text-9xl mb-4 filter drop-shadow-xl animate-bounce-in">
-                            {wordData.image}
+                    <div className="flex flex-col items-center gap-2 relative">
+                        <div className="bg-yellow-100 px-6 py-2 rounded-full font-bold text-yellow-700 shadow-inner flex items-center gap-3">
+                            <span>קָטֵגוֹרְיָה: {wordData.category}</span>
+                            <button
+                                onClick={() => setShowHint(!showHint)}
+                                className="bg-white/50 hover:bg-white p-1 rounded-full px-3 text-xs border border-yellow-300 transition-all"
+                            >
+                                {showHint ? 'הסתר רמז' : 'רמז?'}
+                            </button>
                         </div>
-                        <div className="bg-yellow-100 px-6 py-2 rounded-full font-bold text-yellow-700 shadow-inner">
-                            קָטֵגוֹרְיָה: {wordData.category}
-                        </div>
+
+                        {showHint && (
+                            <div className="absolute top-12 z-20 text-8xl filter drop-shadow-xl animate-bounce-in bg-white/80 p-4 rounded-3xl backdrop-blur-sm border-2 border-yellow-200">
+                                {wordData.image}
+                            </div>
+                        )}
                     </div>
                 )}
 
