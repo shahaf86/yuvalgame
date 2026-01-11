@@ -119,7 +119,7 @@ const MathGame = ({ score, updateScore, onBack }) => {
               w-full py-4 rounded-full text-2xl font-bold text-white transition-all transform hover:scale-105 active:scale-95 shadow-lg flex items-center justify-center gap-3
               ${feedback === 'correct' ? 'bg-green-500 hover:bg-green-600' :
                                 feedback === 'wrong' ? 'bg-red-500 hover:bg-red-600' :
-                                    'bg-primary hover:bg-orange-600'}
+                                    'bg-orange-500 hover:bg-orange-600'}
             `}
                     >
                         {feedback === 'correct' ? 'כל הכבוד!' :
