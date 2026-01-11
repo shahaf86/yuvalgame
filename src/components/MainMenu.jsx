@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Calculator, BookOpen, LogOut, Star, Settings } from 'lucide-react';
 
 const MainMenu = ({ onSelectMode, score, userName, onLogout, onOpenSettings }) => {
@@ -13,6 +13,7 @@ const MainMenu = ({ onSelectMode, score, userName, onLogout, onOpenSettings }) =
 
     // If name is neither, we show a friendly selection (fallback)
     const isUnknown = !isAviv && !isYuval;
+    const [selectedRole, setSelectedRole] = useState(null);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 flex flex-col items-center justify-center p-4 font-sans" dir="rtl">
@@ -57,11 +58,38 @@ const MainMenu = ({ onSelectMode, score, userName, onLogout, onOpenSettings }) =
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl">
 
-                {/* BIG KIDS MODE (Yuval) */}
-                {(isYuval || (isUnknown && !isAviv)) && (
-                    <>
-                        {isUnknown && <div className="col-span-1 md:col-span-2 text-center text-gray-500 mb-4 font-bold">לא זיהינו את השם, מציגים את כל המשחקים:</div>}
+                {/* Unknown Name - Selection Screen */}
+                {isUnknown && !selectedRole && (
+                    <div className="col-span-1 md:col-span-2 flex flex-col items-center gap-6 animate-fade-in">
+                        <div className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-xl border-4 border-yellow-200 text-center max-w-lg">
+                            <h2 className="text-3xl font-bold text-gray-800 mb-6">לאיזה גיל המשחקים?</h2>
 
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <button
+                                    onClick={() => setSelectedRole('yuval')}
+                                    className="bg-orange-100 hover:bg-orange-200 border-2 border-orange-300 p-6 rounded-2xl flex flex-col items-center gap-2 transition-all hover:-translate-y-1"
+                                >
+                                    <span className="text-5xl">🎒</span>
+                                    <span className="text-xl font-bold text-orange-800">ילדים בוגרים</span>
+                                    <span className="text-sm text-gray-600">חשבון, אנגלית, קריאה</span>
+                                </button>
+
+                                <button
+                                    onClick={() => setSelectedRole('aviv')}
+                                    className="bg-pink-100 hover:bg-pink-200 border-2 border-pink-300 p-6 rounded-2xl flex flex-col items-center gap-2 transition-all hover:-translate-y-1"
+                                >
+                                    <span className="text-5xl">🧸</span>
+                                    <span className="text-xl font-bold text-pink-800">ילדים צעירים</span>
+                                    <span className="text-sm text-gray-600">ספירה, אותיות</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* BIG KIDS MODE (Yuval OR Selected Big) */}
+                {(isYuval || selectedRole === 'yuval') && (
+                    <>
                         <button
                             onClick={() => onSelectMode('math')}
                             className="group relative bg-white rounded-3xl p-8 shadow-xl border-4 border-transparent flex flex-col items-center gap-6 overflow-hidden active:scale-95 transition-all"
@@ -112,8 +140,8 @@ const MainMenu = ({ onSelectMode, score, userName, onLogout, onOpenSettings }) =
                     </>
                 )}
 
-                {/* PRESCHOOL MODE (Aviv) */}
-                {(isAviv || isUnknown) && (
+                {/* PRESCHOOL MODE (Aviv OR Selected Small) */}
+                {(isAviv || selectedRole === 'aviv') && (
                     <>
                         <button
                             onClick={() => onSelectMode('counting')}
