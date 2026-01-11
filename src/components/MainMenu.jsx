@@ -3,10 +3,16 @@ import { Calculator, BookOpen, LogOut, Star, Settings } from 'lucide-react';
 
 const MainMenu = ({ onSelectMode, score, userName, onLogout, onOpenSettings }) => {
     // Normalization helper
-    const isAviv = ['aviv', 'אביב'].includes(userName.toLowerCase().trim());
+    const normalizedName = userName.toLowerCase().trim();
+    const isAviv = ['aviv', 'אביב'].includes(normalizedName);
+    const isYuval = ['yuval', 'יובל'].includes(normalizedName);
 
-    // If not Aviv, assume Yuval/Older Kid default
-    const isBigKid = !isAviv;
+    // Strict logic requested by user:
+    // Yuval/יובל -> 4 games (Math, Hebrew, English, Hangman)
+    // Aviv/אביב -> 2 games (Counting, FirstLetter)
+
+    // If name is neither, we show a friendly selection (fallback)
+    const isUnknown = !isAviv && !isYuval;
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 flex flex-col items-center justify-center p-4 font-sans" dir="rtl">
@@ -52,8 +58,10 @@ const MainMenu = ({ onSelectMode, score, userName, onLogout, onOpenSettings }) =
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl">
 
                 {/* BIG KIDS MODE (Yuval) */}
-                {isBigKid && (
+                {(isYuval || (isUnknown && !isAviv)) && (
                     <>
+                        {isUnknown && <div className="col-span-1 md:col-span-2 text-center text-gray-500 mb-4 font-bold">לא זיהינו את השם, מציגים את כל המשחקים:</div>}
+
                         <button
                             onClick={() => onSelectMode('math')}
                             className="group relative bg-white rounded-3xl p-8 shadow-xl border-4 border-transparent flex flex-col items-center gap-6 overflow-hidden active:scale-95 transition-all"
@@ -105,7 +113,7 @@ const MainMenu = ({ onSelectMode, score, userName, onLogout, onOpenSettings }) =
                 )}
 
                 {/* PRESCHOOL MODE (Aviv) */}
-                {isAviv && (
+                {(isAviv || isUnknown) && (
                     <>
                         <button
                             onClick={() => onSelectMode('counting')}
