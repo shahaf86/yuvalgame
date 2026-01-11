@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import MainMenu from './components/MainMenu';
 import MathGame from './components/MathGame';
 import HebrewGame from './components/HebrewGame';
+import EnglishGame from './components/EnglishGame';
+import HangmanGame from './components/HangmanGame';
 import WelcomeScreen from './components/WelcomeScreen';
 
 function App() {
   const [userName, setUserName] = useState(() => {
     return localStorage.getItem('kidAppName') || null;
   });
-  const [currentMode, setCurrentMode] = useState(null); // 'math', 'hebrew', or null (menu)
+  const [currentMode, setCurrentMode] = useState(null); // 'math', 'hebrew', 'english', 'hangman', null
   const [score, setScore] = useState(() => {
     const saved = localStorage.getItem('kidAppScore');
     return saved ? parseInt(saved, 10) : 0;
@@ -41,6 +43,18 @@ function App() {
         />;
       case 'hebrew':
         return <HebrewGame
+          score={score}
+          updateScore={handleUpdateScore}
+          onBack={() => setCurrentMode(null)}
+        />;
+      case 'english':
+        return <EnglishGame
+          score={score}
+          updateScore={handleUpdateScore}
+          onBack={() => setCurrentMode(null)}
+        />;
+      case 'hangman':
+        return <HangmanGame
           score={score}
           updateScore={handleUpdateScore}
           onBack={() => setCurrentMode(null)}

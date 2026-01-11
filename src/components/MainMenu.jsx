@@ -41,6 +41,30 @@ const MainMenu = ({ onSelectMode, score, userName }) => {
                     <span className="text-3xl font-bold text-gray-800 z-10">עברית</span>
                     <span className="text-gray-500 z-10 font-medium">סיפורים ושאלות</span>
                 </button>
+
+                <button
+                    onClick={() => onSelectMode('english')}
+                    className="group relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-4 border-transparent hover:border-accent flex flex-col items-center gap-6 overflow-hidden"
+                >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-100 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+                    <div className="bg-yellow-100 p-6 rounded-full group-hover:bg-accent group-hover:text-white transition-colors duration-300 z-10">
+                        <span className="text-5xl font-bold">Aa</span>
+                    </div>
+                    <span className="text-3xl font-bold text-gray-800 z-10">אנגלית</span>
+                    <span className="text-gray-500 z-10 font-medium">משחק הזיכרון</span>
+                </button>
+
+                <button
+                    onClick={() => onSelectMode('hangman')}
+                    className="group relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-4 border-transparent hover:border-red-400 flex flex-col items-center gap-6 overflow-hidden"
+                >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-100 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+                    <div className="bg-red-100 p-6 rounded-full group-hover:bg-red-400 group-hover:text-white transition-colors duration-300 z-10">
+                        <span className="text-5xl">🙂</span>
+                    </div>
+                    <span className="text-3xl font-bold text-gray-800 z-10">נחש את המילה</span>
+                    <span className="text-gray-500 z-10 font-medium">כמו איש תלוי</span>
+                </button>
             </div>
         </div>
     );
